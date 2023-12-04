@@ -1,0 +1,9 @@
+bin/
+build/
+*.o
+*.so
+*.lib
+src/
+obj/
+external/
+gtest-proj

@@ -1,0 +1,48 @@
+SRCS := $(wildcard *.c)
+OBJDIR = .build
+#OBJS := $(SRCS:%.c=%.o)
+#OBJS := $(addprefix $(OBJDIR),$(OBJS))
+OBJS := $(SRCS:%.c=$(OBJDIR)/%.o)
+
+DEPDIR = .dep
+DEPS := $(SRCS:%.c=$(DEPDIR)/%.d)
+DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
+
+# -MT: Name of the target (absolute path)
+# -MMD: List user header files
+# -MP: Add phony targets
+# -MF: Name of the output dependency file
+
+TARGET = foo
+
+
+all: $(TARGET)
+
+
+$(OBJDIR)/*.o: %.c | $(OBJDIR) $(DEPDIR)
+	@echo [CC] $@
+	@$(CC) -c $(CFLAGS) $(DEPFLAGS) -o $@ $<
+
+
+$(TARGET):  $(OBJS)
+	@echo [LD] $@
+	@$(CC) -c $(LDFLAGS) -o $@ $^
+
+
+clean:
+	-@$(RM) -rvf $(OBJDIR) $(DEPDIR) $(TARGET)
+
+
+$(OBJDIR) $(DEPDIR):
+	@mkdir -p $@
+
+
+$(DEPFILES):
+
+
+include $(wildcard $(DEPFILES))
+
+# The DEPFILES and the include line must be the last lines in the file
+
+.PHONY: all clean
+# vim: ts=4
